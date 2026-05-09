@@ -22,6 +22,16 @@ public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
+private:
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	bool bShowDirectionArrows = true;
+
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	float ArrowLength = 150.f;
+
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	float ArrowHeadSize = 25.f;
+	
 protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

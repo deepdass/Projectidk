@@ -10,7 +10,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
+
+#include "DrawDebugHelpers.h"
+
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -25,8 +27,11 @@ ASCharacter::ASCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 	
-	bUseControllerRotationYaw = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 350.0f, 0.0f);
+	
+	bUseControllerRotationYaw = false;
+	
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +47,43 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+#if ENABLE_DRAW_DEBUG
+	if (!bShowDirectionArrows) return;
+
+	FVector Origin = GetActorLocation();
+
+	// --- Arrow 1: Movement direction (velocity) ---
+	FVector MoveDir = GetVelocity().GetSafeNormal();
+	if (!MoveDir.IsNearlyZero())
+	{
+		DrawDebugDirectionalArrow(
+			GetWorld(),
+			Origin,
+			Origin + MoveDir * ArrowLength,
+			ArrowHeadSize,
+			FColor::Green,
+			false,
+			-1.f,
+			0,
+			3.f
+		);
+	}
+
+	// --- Arrow 2: Controller/look direction ---
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		FVector LookDir = PC->PlayerCameraManager->GetCameraRotation().Vector();
+
+		DrawDebugDirectionalArrow(
+			GetWorld(),
+			Origin + FVector(0.f, 0.f, 40.f),  // offset up so it doesn't overlap green
+			Origin + FVector(0.f, 0.f, 40.f) + LookDir * ArrowLength,
+			ArrowHeadSize,
+			FColor::Blue,
+			false, -1.f, 0, 3.f
+		);
+	}
+#endif
 }
 
 // Called to bind functionality to input
@@ -71,18 +113,16 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 void ASCharacter::func_Move(const FInputActionValue& InputValue)
 {
 	FVector2D InputVector = InputValue.Get<FVector2D>();
+	FRotator ControlRotation = GetControlRotation();
+	ControlRotation.Pitch = 0.0f;
+	ControlRotation.Roll = 0.0f;
+	
+	FVector RightVector = FRotationMatrix(ControlRotation).GetScaledAxis(EAxis::Y);
 	
 	if (IsValid(Controller))
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); 
-		
-		AddMovementInput(ForwardDirection, InputVector.Y);
-		AddMovementInput(RightDirection, InputVector.X);
-
+		AddMovementInput(ControlRotation.Vector(), InputVector.Y);
+		AddMovementInput(RightVector, InputVector.X);
 	}
 }
 
