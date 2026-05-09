@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ExplosiveBarrel.generated.h"
 
+class URadialForceComponent;
+
 UCLASS()
 class PROJECTIDK_API AExplosiveBarrel : public AActor
 {
@@ -22,4 +24,19 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* SphereComp;
+	
+	UPROPERTY(EditAnywhere)
+	URadialForceComponent* RadComp;
+	
+	// Funcs
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
+				UPrimitiveComponent* OtherComp, FVector NormalImpulse, 
+				const FHitResult& Hit);
+
+
 };
