@@ -38,5 +38,6 @@ protected:
 				UPrimitiveComponent* OtherComp, FVector NormalImpulse, 
 				const FHitResult& Hit);
 
-
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Explode();
 };

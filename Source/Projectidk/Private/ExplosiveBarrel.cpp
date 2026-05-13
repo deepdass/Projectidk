@@ -34,7 +34,7 @@ void AExplosiveBarrel::BeginPlay()
 // Called every frame
 void AExplosiveBarrel::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
 	
 }
 
@@ -45,9 +45,14 @@ void AExplosiveBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 {
 	// don't overlap with yourself
 	if (OtherActor && OtherActor != this)
-	{
-		RadComp->FireImpulse();
-		OtherActor->Destroy();
-		
+    {
+		Explode();
+		OtherActor->Destroy(); 
 	}
+}
+
+void AExplosiveBarrel::Explode_Implementation()
+{	
+	//Basic Explode Func 
+	RadComp->FireImpulse();
 }

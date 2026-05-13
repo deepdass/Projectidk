@@ -21,17 +21,17 @@ public:
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere, Category = "Projectile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
 	USphereComponent* SphereComp;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Projectile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
 	UProjectileMovementComponent* ProjectileMovement;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Projectile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
     UNiagaraComponent* ParticleComp;
 	
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() override; 
 
 public:
 	// Called every frame
