@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "DrawDebugHelpers.h"
+#include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 
 
@@ -30,12 +31,12 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 	
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("Interaction");
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 350.0f, 0.0f);
 	
 	bUseControllerRotationYaw = false;
-	
 }
 
 // Called when the game starts or when spawned
@@ -162,7 +163,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	if (bHit)
 	{
 		FVector ImpactPt = HitResult.ImpactPoint;
-		ProjectileRot = (ImpactPt - HandLoc).GetSafeNormal().Rotation();
+		ProjectileRot = (ImpactPt - HandLoc).GetSafeNormal().Rotation();  
 	}
 
 	FTransform SpawnTM = FTransform(ProjectileRot, HandLoc);

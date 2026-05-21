@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h" 
+#include "SAttributeComponent.h"
 
 
 // Sets default values
@@ -16,6 +17,7 @@ Aprojectile::Aprojectile()
 	
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &Aprojectile::OnActorOverlap);
 	RootComponent = SphereComp;
 	
 	ParticleComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ParticleComp"));
@@ -25,7 +27,22 @@ Aprojectile::Aprojectile()
 	ProjectileMovement->InitialSpeed = 1000.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bInitialVelocityInLocalSpace = true;
-	
+}
+
+void Aprojectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
+{
+	if (OtherActor and OtherActor != GetInstigator())
+	{
+		USAttributeComponent* AttributeComp = OtherActor->FindComponentByClass<USAttributeComponent>();
+		
+		if (AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-20.0f);
+		};
+		Destroy();
+		
+	};
 	
 }
 
